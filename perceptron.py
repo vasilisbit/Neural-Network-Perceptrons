@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import mplcursors
 
 def linspace(start, stop, num):
-    """Replace numpy's linspace"""
+    """Αντικατάσταση της numpy linspace"""
     if num == 1:
         return [start]
     step = (stop - start) / (num - 1)
@@ -48,7 +48,7 @@ class Perceptron:
 def load_data(filename):
     X, y = [], []
     with open(filename, 'r') as f:
-        next(f)  # Skip header
+        next(f)  # Παράλειψη κεφαλίδας
         for line in f:
             x1, x2, label = map(float, line.strip().split(','))
             X.append([x1, x2])
@@ -59,64 +59,63 @@ def get_min_max(data, column):
     values = [row[column] for row in data]
     return min(values), max(values)
 
-# Load data
+# Φόρτωση δεδομένων
 X_train, y_train = load_data('training_data.csv')
 X_test, y_test = load_data('test_data.csv')
 
-# Train perceptron
+# Εκπαίδευση perceptron
 perceptron = Perceptron(learning_rate=0.1, epochs=20)
 perceptron.fit(X_train, y_train)
 
-# Test accuracy
+# Έλεγχος ακρίβειας
 y_pred = perceptron.predict(X_test)
 accuracy = sum(1 for y1, y2 in zip(y_pred, y_test) if y1 == y2) / len(y_test)
 print(f"Ακρίβεια Τεστ: {accuracy * 100:.2f}%")
 
 # Εμφάνιση της εξίσωσης του ορίου απόφασης
-print(f"Εξίσωση Ορίου Απόφασης: {perceptron.weights[0]:.2f} * x1 + {perceptron.weights[1]:.2f} * x2 + {perceptron.bias:.2f} = 0")
+print(f"Εξίσωση Ορίου Απόφασης: {perceptron.weights[0]:.2f} * x1 + {perceptron.weights[1]:.2f} * x2 + ({perceptron.bias:.2f}) = 0")
 
-# Visualization
+# Οπτικοποίηση
 fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
-# Get data ranges
+# Λήψη εύρους δεδομένων
 x_min, x_max = get_min_max(X_train, 0)
 y_min, y_max = get_min_max(X_train, 1)
 x_min, x_max = x_min - 1, x_max + 1
 y_min, y_max = y_min - 1, y_max + 1
 
-# Plot training data
+# Σχεδίαση δεδομένων εκπαίδευσης
 train_pos = [(x[0], x[1]) for x, y in zip(X_train, y_train) if y == 1]
 train_neg = [(x[0], x[1]) for x, y in zip(X_train, y_train) if y == -1]
 
 scatter_1 = ax[0].scatter([x[0] for x in train_pos], [x[1] for x in train_pos],
-                         color='blue', edgecolor='k', label='Training +1')
+                         color='blue', edgecolor='k', label='Εκπαίδευση +1')
 scatter_2 = ax[0].scatter([x[0] for x in train_neg], [x[1] for x in train_neg],
-                         color='red', edgecolor='k', label='Training -1')
+                         color='red', edgecolor='k', label='Εκπαίδευση -1')
 
-# Plot test data
+# Σχεδίαση δεδομένων ελέγχου
 test_pos = [(x[0], x[1]) for x, y in zip(X_test, y_test) if y == 1]
 test_neg = [(x[0], x[1]) for x, y in zip(X_test, y_test) if y == -1]
 
 scatter_3 = ax[0].scatter([x[0] for x in test_pos], [x[1] for x in test_pos],
-                         color='cyan', marker='x', label='Test +1')
+                         color='cyan', marker='x', label='Τεστ +1')
 scatter_4 = ax[0].scatter([x[0] for x in test_neg], [x[1] for x in test_neg],
-                         color='orange', marker='x', label='Test -1')
+                         color='orange', marker='x', label='Τεστ -1')
 
-# Plot decision boundary and fill background
+# Σχεδίαση ορίου απόφασης και γέμισμα φόντου
 xx = linspace(x_min, x_max, 100)
 if perceptron.weights[1] != 0:
     yy = [-(perceptron.weights[0] * x + perceptron.bias) / perceptron.weights[1] for x in xx]
 
-    # Add background colors
-    ax[0].fill_between(xx, yy, [y_max] * len(xx), alpha=0.2, color='blue', label='Region +1')
-    ax[0].fill_between(xx, yy, [y_min] * len(xx), alpha=0.2, color='red', label='Region -1')
+    # Προσθήκη χρωμάτων φόντου
+    ax[0].fill_between(xx, yy, [y_max] * len(xx), alpha=0.2, color='blue', label='Περιοχή +1')
+    ax[0].fill_between(xx, yy, [y_min] * len(xx), alpha=0.2, color='red', label='Περιοχή -1')
 
-    # Plot decision boundary line
+    # Σχεδίαση γραμμής ορίου απόφασης
     ax[0].plot(xx, yy, 'green', linestyle='--', label='Όριο Απόφασης')
 
-    # Add equation text at an angle
+    # Προσθήκη κειμένου εξίσωσης υπό γωνία
     equation = f"{perceptron.weights[0]:.2f}x₁ + {perceptron.weights[1]:.2f}x₂ + ({perceptron.bias:.2f}) = 0"
-    # Position text at 2/3 of the x-range and 1/3 of the y-range
     text_x = x_min + (x_max - x_min) * 0.675
     text_y = y_min + (y_max - y_min) * 0.027
     ax[0].text(text_x, text_y, equation, rotation=-35, color='green',
@@ -124,17 +123,17 @@ if perceptron.weights[1] != 0:
 
 ax[0].set_xlim(x_min, x_max)
 ax[0].set_ylim(y_min, y_max)
-# Place legend in top left corner
+# Τοποθέτηση υπομνήματος στην πάνω αριστερή γωνία
 ax[0].legend(loc='upper left')
 ax[0].set_title('Όριο Απόφασης, Εκπαίδευση και Τεστ')
 
-# Add mplcursors for hover
+# Προσθήκη mplcursors για εμφάνιση στο hover
 cursor = mplcursors.cursor([scatter_1, scatter_2, scatter_3, scatter_4], hover=True)
 @cursor.connect("add")
 def on_add(sel):
     sel.annotation.set_text(f"x1: {sel.target[0]:.2f}\nx2: {sel.target[1]:.2f}")
 
-# Plot errors per epoch
+# Σχεδίαση λαθών ανά εποχή
 ax[1].plot(range(1, len(perceptron.errors) + 1), perceptron.errors, marker='o')
 ax[1].set_title('Λάθη ανά Εποχή')
 ax[1].set_xlabel('Εποχή')
