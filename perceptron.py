@@ -9,7 +9,7 @@ def linspace(start, stop, num):
     return [start + i * step for i in range(num)]
 
 class Perceptron:
-    def __init__(self, learning_rate=0.01, epochs=100):
+    def __init__(self, learning_rate = 0.01, epochs = 100):
         self.learning_rate = learning_rate
         self.epochs = epochs
         self.weights = None
@@ -64,7 +64,7 @@ X_train, y_train = load_data('training_data.csv')
 X_test, y_test = load_data('test_data.csv')
 
 # Εκπαίδευση perceptron
-perceptron = Perceptron(learning_rate=0.1, epochs=20)
+perceptron = Perceptron(learning_rate = 0.1, epochs = 20)
 perceptron.fit(X_train, y_train)
 
 # Έλεγχος ακρίβειας
