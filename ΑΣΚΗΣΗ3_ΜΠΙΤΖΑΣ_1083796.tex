@@ -376,32 +376,94 @@
     \end{itemize}
 \end{itemize}
 
+\subsection{Συναρτήσεις Οπτικοποίησης Τερματικού}
+
+\subsubsection{Συνάρτηση print\_decision\_boundary}
+
+\begin{tcolorbox}[myCustomStyle = {perceptron.py}]
+    \begin{lstlisting}[style=myPythonStyle]
+ def print_decision_boundary(X, y, perceptron, width=50, height=20):
+     """Οπτικοποίηση ορίου απόφασης στο τερματικό"""
+     x_min, x_max = get_min_max(X, 0)
+     y_min, y_max = get_min_max(X, 1)
+
+     print("\nΌριο Απόφασης:")
+     print("-" * (width + 2))
+
+     for i in range(height):
+         y_val = y_max - (i * (y_max - y_min) / height)
+         line = "|"
+         for j in range(width):
+             x_val = x_min + (j * (x_max - x_min) / width)
+             prediction = 1 if (perceptron.weights[0] * x_val + 
+                              perceptron.weights[1] * y_val + 
+                              perceptron.bias) >= 0 else -1
+             line += "+" if prediction == 1 else "-"
+         line += "|"
+         print(line)
+     print("-" * (width + 2))
+     print(f"Υπόμνημα: '+' = θετική περιοχή, '-' = αρνητική περιοχή")
+    \end{lstlisting}
+\end{tcolorbox}
+
+Η συνάρτηση \textbf{print\_decision\_boundary} παρέχει μια εναλλακτική απεικόνιση του ορίου απόφασης στο τερματικό:
+\begin{itemize}
+    \item Δημιουργεί ASCII απεικόνιση του χώρου χαρακτηριστικών
+    \item Χρησιμοποιεί ``+`` για θετική περιοχή και ``-`` για αρνητική
+    \item Προσαρμόζεται στο μέγεθος του τερματικού (προεπιλογή: 50×20)
+\end{itemize}
+
+\subsubsection{Συνάρτηση print\_error\_plot}
+
+\begin{tcolorbox}[myCustomStyle = {perceptron.py}]
+    \begin{lstlisting}[style=myPythonStyle]
+ def print_error_plot(errors):
+     """Οπτικοποίηση εξέλιξης σφαλμάτων στο τερματικό"""
+     print("Εξέλιξη Σφαλμάτων:")
+     max_error = max(errors)
+     width = 40
+     for i, error in enumerate(errors, 1):
+         bar_length = int((error / max_error) * width)
+         print(f"Εποχή {i:2d}: {'█' * bar_length} ({error})")
+    \end{lstlisting}
+\end{tcolorbox}
+
+Η συνάρτηση \textbf{print\_error\_plot} παρέχει:
+\begin{itemize}
+    \item Γραφική αναπαράσταση σφαλμάτων με μπάρες ASCII
+    \item Κλιμάκωση σε σχέση με το μέγιστο σφάλμα
+    \item Αριθμητική τιμή σφάλματος για κάθε εποχή
+\end{itemize}
+
 \subsection{Διαχείριση Οπτικοποίησης}
 
-Το πρόγραμμα περιλαμβάνει εκτενείς λειτουργίες οπτικοποίησης:
+Το πρόγραμμα υποστηρίζει δύο τρόπους οπτικοποίησης:
+Ελέγχει τη διαθεσιμότητα των βιβλιοθηκών οπτικοποίησης:
+\begin{tcolorbox}[myCustomStyle = {perceptron.py}]
+\begin{lstlisting}[style=myPythonStyle]
+ try:
+     import matplotlib.pyplot as plt
+     import mplcursors
+     VISUALIZATION_AVAILABLE = True
+ except ImportError:
+     VISUALIZATION_AVAILABLE = False
+     print("Προειδοποίηση: Οι βιβλιοθήκες οπτικοποίησης"
+         " δεν βρέθηκαν. Χρήση εξόδου τερματικού.\n")
+\end{lstlisting}
+\end{tcolorbox}
 
 \begin{enumerate}
-    \item \textbf{Δημιουργία Γραφημάτων}:
+    \item \textbf{Γραφική Απεικόνιση} (με matplotlib):
     \begin{itemize}
-        \item Χρήση \textbf{matplotlib} για δημιουργία διπλού γραφήματος
-        \item Ρύθμιση μεγέθους και διάταξης (\textbf{figsize=(14, 6)}) %chktex 36
+        \item Δημιουργεί διαδραστικά γραφήματα όταν είναι διαθέσιμη η matplotlib
+        \item Περιλαμβάνει όλες τις λειτουργίες που αναφέρθηκαν προηγουμένως
     \end{itemize}
-    \item \textbf{Απεικόνιση Δεδομένων}:
+
+    \item \textbf{Απεικόνιση Τερματικού} (εναλλακτική):
     \begin{itemize}
-        \item Διαχωρισμός και χρωματική κωδικοποίηση σημείων
-        \item Διαφορετικοί δείκτες για δεδομένα εκπαίδευσης και ελέγχου
-        \item Προσθήκη υπομνήματος και τίτλων
-    \end{itemize}
-    \item \textbf{Διαδραστικά Στοιχεία}:
-    \begin{itemize}
-        \item Χρήση \textbf{mplcursors} για εμφάνιση πληροφοριών στο hover
-        \item Προβολή συντεταγμένων σημείων
-    \end{itemize}
-    \item \textbf{Οπτικοποίηση Ορίου Απόφασης}:
-    \begin{itemize}
-        \item Σχεδίαση γραμμής διαχωρισμού
-        \item Χρωματικό γέμισμα περιοχών ταξινόμησης
-        \item Εμφάνιση εξίσωσης ορίου απόφασης
+        \item Ενεργοποιείται αυτόματα όταν δεν υπάρχουν οι βιβλιοθήκες γραφικών
+        \item Παρέχει ASCII απεικονίσεις του ορίου απόφασης και των σφαλμάτων
+        \item Προσφέρει εύκολα κατανοητή οπτικοποίηση χωρίς εξωτερικές εξαρτήσεις
     \end{itemize}
 \end{enumerate}
 
